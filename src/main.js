@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import './styles/base.less'
 import './styles/iconfont.css'
+import 'amfe-flexible'
 
 // import { Button } from 'vant'
 // Vue.use(Button)
