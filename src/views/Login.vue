@@ -1,41 +1,46 @@
 <template>
-  <div>
-    <newsHeader>登录界面</newsHeader>
-   <newsLogo></newsLogo>
+  <div class="log">
+    <newsHeader>登录</newsHeader>
+    <newsLogo></newsLogo>
     <van-form @submit="onSubmit">
-   <van-field
-    v-model="username"
-    name="用户名"
-    label="用户名"
-    placeholder="请输入用户名"
-    :rules="rule.user"
-  />
-  <van-field
-    v-model="password"
-    type="password"
-    name="密码"
-    label="密码"
-    placeholder="请输入密码"
-    :rules="rule.password"
-  />
-  <div style="margin: 16px;">
-    <van-button round block type="info" native-type="submit">
-      提交
-    </van-button>
-  </div>
-</van-form>
+      <van-field
+        v-model="userInfo.username"
+        name="用户名"
+        label="用户名"
+        placeholder="请输入用户名"
+        :rules="rule.user"
+      />
+      <van-field
+        v-model="userInfo.password"
+        type="password"
+        name="密码"
+        label="密码"
+        placeholder="请输入密码"
+        :rules="rule.password"
+      />
+      <div style="margin: 16px;">
+        <van-button round block type="info" native-type="submit">
+          提交
+        </van-button>
+      </div>
+    </van-form>
+    <p class="tips">没有账号？去<router-link to='/register'>注册</router-link></p>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data() {
     return {
-      username: '',
-      password: '',
+      userInfo: {
+        username: '',
+        password: ''
+      },
+      // username: '',
+      // password: '',
       rule: {
-        // 将校验用户名和密码的规则放到data里，然后让vules调用
+        // 将校验用户名和密码的规则放到data里，然后让rules调用
         user: [
           { required: true, message: '请填写用户名' },
           { pattern: /^\d{5,10}$/, message: '用户名请输入5-10位数字', trigger: 'onChange' }
@@ -52,10 +57,15 @@ export default {
     async onSubmit() {
       console.log('我被提交了')
       // async函数会返回一个promise对象
-      const res = await axios.post('http://localhost:3000/login', {
-        username: this.username,
-        password: this.password
-      })
+      // 基准地址 ‘http://locallhost:3000'已经添加到默认了
+      const res = await this.$axios.post('/login', this.userInfo)
+      //  { username: this.username,
+      //   password: this.password
+      // })
+      // {
+      //   username: this.username,
+      //   password: this.password
+      // })
       console.log(res.data)
       const { statusCode, message } = res.data
       if (statusCode === 200) {
@@ -72,5 +82,16 @@ export default {
 </script>
 
 <style lang='less'>
+.log {
+  .tips {
+  float: right;
+  font-size: 12px;
+  padding-right: 8px;
 
+    a {
+      color: orange;
+      font-weight: 700;
+    }
+  }
+}
 </style>

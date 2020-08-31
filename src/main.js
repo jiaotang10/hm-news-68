@@ -13,6 +13,12 @@ import 'vant/lib/index.css'
 import newsHeader from './components/news-header.vue'
 import newsLogo from './components/news-logo.vue'
 
+import axios from 'axios'
+// 把axios挂载到vue的原型上,挂到原型上的东西 最好带上一个$
+Vue.prototype.$axios = axios
+// 给axios配置默认的baseURL,基准地址,以后就不用输地址了
+axios.defaults.baseURL = 'http://localhost:3000'
+
 Vue.use(Vant)
 // Vue.use(Form)
 Vue.config.productionTip = false
