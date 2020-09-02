@@ -1,5 +1,5 @@
 <template>
-  <div class="reg">
+  <div >
     <newsHeader>注册</newsHeader>
     <newsLogo></newsLogo>
     <van-form @submit="register">
@@ -70,11 +70,16 @@ export default {
       //   nickname: this.nickname,
       //   password: this.password
       // })
-      console.log(res.data)
+      // console.log(res.data)
       const { statusCode, message } = res.data
       if (statusCode === 200) {
         this.$toast.success(message)
-        this.$router.push('/login')
+        // this.$router.push('/login')
+        // 将填写的信息传递给login页面,跳转路由,通过params，命名路由通过index.js里规则里定义的name属性
+        this.$router.push({
+          name: 'login',
+          params: this.userInfo
+        })
       } else {
         this.$toast.fail(message)
       }
@@ -83,8 +88,7 @@ export default {
 }
 </script>
 
-<style lang='less'>
-.reg {
+<style lang='less' scoped>
   .tips {
   float: right;
   font-size: 12px;
@@ -95,5 +99,4 @@ export default {
       font-weight: 700;
     }
   }
-}
 </style>

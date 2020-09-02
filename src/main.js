@@ -4,30 +4,46 @@ import router from './router'
 import './styles/base.less'
 import './styles/iconfont.css'
 import 'amfe-flexible'
+import moment from 'moment'
+
+import './utils/allAxios'
+import './utils/allComponents'
 
 // import { Button } from 'vant'
 // Vue.use(Button)
 import Vant from 'vant'
 import 'vant/lib/index.css'
 // import { Form } from 'vant'
-import newsHeader from './components/news-header.vue'
-import newsLogo from './components/news-logo.vue'
-
-import axios from 'axios'
-// 把axios挂载到vue的原型上,挂到原型上的东西 最好带上一个$
-Vue.prototype.$axios = axios
-// 给axios配置默认的baseURL,基准地址,以后就不用输地址了
-axios.defaults.baseURL = 'http://localhost:3000'
-
 Vue.use(Vant)
 // Vue.use(Form)
 Vue.config.productionTip = false
 
-// 全局注册头部组件
-Vue.component('newsHeader', newsHeader)
-Vue.component('newsLogo', newsLogo)
+// 全局过滤器 把moment安装
+Vue.filter('time', input => {
+  return moment(input).format('YYYY-MM-DD')
+})
 
 new Vue({
   router,
   render: h => h(App)
 }).$mount('#app')
+
+// 配置全局的导航守卫
+// 判断 to的地址是否是去user
+// 若不是去user 直接放行
+// 若去user 得验证token 有放行 没有跳到login
+
+router.beforeEach(function(to, from, next) {
+  // console.log(to)
+  if (to.path === '/user') {
+    const token = localStorage.getItem('token')
+    if (token) {
+      next()
+    } else {
+      // 只有在组件里才用this.$router
+      router.push('/login')
+    }
+  } else {
+    next()
+  }
+})

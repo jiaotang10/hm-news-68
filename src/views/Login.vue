@@ -1,5 +1,5 @@
 <template>
-  <div class="log">
+  <div >
     <newsHeader>登录</newsHeader>
     <newsLogo></newsLogo>
     <van-form @submit="onSubmit">
@@ -31,6 +31,13 @@
 <script>
 // import axios from 'axios'
 export default {
+  // 通过钩子函数 created 接收参数
+  created() {
+    // console.log(this.$route)
+    const { username, password } = this.$route.params
+    this.userInfo.username = username
+    this.userInfo.password = password
+  },
   data() {
     return {
       userInfo: {
@@ -62,13 +69,12 @@ export default {
       //  { username: this.username,
       //   password: this.password
       // })
-      // {
-      //   username: this.username,
-      //   password: this.password
-      // })
       console.log(res.data)
-      const { statusCode, message } = res.data
+      const { statusCode, message, data } = res.data
       if (statusCode === 200) {
+        // 将token和id存储到localstorage
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('userId', data.user.id)
         // 在组件中使用 toast，必须 用 this.$toast
         this.$toast.success(message)
         // 登录成功 跳转到个人中心页面 user
@@ -81,8 +87,7 @@ export default {
 }
 </script>
 
-<style lang='less'>
-.log {
+<style lang='less' scoped>
   .tips {
   float: right;
   font-size: 12px;
@@ -93,5 +98,4 @@ export default {
       font-weight: 700;
     }
   }
-}
 </style>
