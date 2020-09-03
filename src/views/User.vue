@@ -1,14 +1,14 @@
 <template>
   <div class="user">
       <p class="tt"></p>
-      <div class="title">
+      <div class="title" @click="editFn">
           <div class="avator">
               <!-- 路径必须拼成绝对路径 -->
               <img :src="base + user.head_img" alt="">
           </div>
           <div class="info">
               <div class="name">
-                   <span v-if='user.gender===0' class="iconfont iconxingbienan"></span>
+                   <span v-if='user.gender===1' class="iconfont iconxingbienan"></span>
                    <span v-else class="iconfont iconxingbienv"></span>
                    <span>{{user.nickname}}</span>
               </div>
@@ -35,7 +35,7 @@
             <template>我的收藏</template>
             <template #content>文章/视频</template>
         </newsNav>
-        <newsNav>
+        <newsNav  to='/edit'>
             <template>设置</template>
         </newsNav>
       </div>
@@ -60,24 +60,11 @@ export default {
   async created() {
     const userId = localStorage.getItem('userId')
     const res = await this.$axios.get(`/user/${userId}`)
-    // , {
-    //   // token必须放到请求头中，请求头 Authorization
-    //   headers: {
-    //     Authorization: token
-    //   }
-    // }// 把token 放到请求拦截器中，这样不用写请求头了
-    // console.log(res)
+    console.log(res)
     const { statusCode, data } = res.data
     if (statusCode === 200) {
       this.user = data
     }
-    // 用响应拦截器 解决token验证失效的问题
-    // else if (statusCode === 401) {
-    //   this.$toast.fail('用户验证失败')
-    //   this.$router.push('/login')
-    //   localStorage.removeItem('token')
-    //   localStorage.removeItem('userId')
-    // }
   },
   methods: {
     async exit() {
@@ -96,6 +83,9 @@ export default {
       } catch (e) {
         this.$toast('取消退出')
       }
+    },
+    editFn() {
+      this.$router.push('/edit')
     }
   }
 }
