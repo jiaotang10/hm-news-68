@@ -4,10 +4,10 @@ import router from './router'
 import './styles/base.less'
 import './styles/iconfont.css'
 import 'amfe-flexible'
-import moment from 'moment'
 
 import './utils/allAxios'
 import './utils/allComponents'
+import './utils/allFilter'
 
 // import { Button } from 'vant'
 // Vue.use(Button)
@@ -17,11 +17,6 @@ import 'vant/lib/index.css'
 Vue.use(Vant)
 // Vue.use(Form)
 Vue.config.productionTip = false
-
-// 全局过滤器 把moment安装
-Vue.filter('time', input => {
-  return moment(input).format('YYYY-MM-DD')
-})
 
 new Vue({
   router,
