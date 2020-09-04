@@ -27,11 +27,11 @@
             <template>我的关注</template>
             <template #content>关注的用户</template>
         </newsNav>
-        <newsNav to='/reply'>
+        <newsNav to='/comment'>
             <template>我的跟帖</template>
             <template #content>跟帖/回复</template>
         </newsNav>
-        <newsNav>
+        <newsNav to='/mystar'>
             <template>我的收藏</template>
             <template #content>文章/视频</template>
         </newsNav>
