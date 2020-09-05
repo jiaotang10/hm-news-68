@@ -32,7 +32,7 @@ export default {
     line-height: 50px;
     display: flex;
     text-align: center;
-    border-bottom: 1px solid #ccc;
+    // border-bottom: 1px solid #ccc;
     z-index: 100;
     .back,
     .icn {

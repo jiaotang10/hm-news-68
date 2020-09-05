@@ -12,7 +12,9 @@ axios.defaults.baseURL = 'http://localhost:3000'
 axios.interceptors.request.use(function(config) {
 //   console.log('请求拦截', config)
   const token = localStorage.getItem('token')
-  config.headers.Authorization = token
+  if (token) {
+    config.headers.Authorization = token
+  }
   return config
 })
 // token验证失败的 需要清除localstorage和跳转到登录页面

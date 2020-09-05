@@ -85,11 +85,11 @@ export default {
         // 清除之后需要加载第一页的数据
         this.pageIndex = 1
         // 请求数据
-        this.getCommentList()
         // 防止下拉刷新前  已经全部加载完了，没有数据了
         this.finished = false
         // 将 loading 设置为 true，表示处于加载状态
         this.loading = true
+        this.getCommentList()
       }, 1000)
     }
   }
