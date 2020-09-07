@@ -9,13 +9,13 @@
                 <p class="time">{{comment.create_date | now}}</p>
             </div>
             <div class="userReply">
-                <span>回复</span>
+                <span @click="onReply">回复</span>
             </div>
         </div>
         <!-- 递归组件的定义 就是在一个组件的模版中渲染这个组件本身，但必须通过name属性来完成，name取什么名 调用组件的名字就是什么名 -->
         <div class="userComment">
             <!-- <div>我是递归评论组件</div> -->
-            <newsDigui v-if="comment.parent" :aa='comment.parent'></newsDigui>
+            <newsDigui v-if="comment.parent" :aa='comment.parent' :count='data'></newsDigui>
             <div class="cc">{{comment.content}}</div>
         </div>
     </div>
@@ -28,8 +28,23 @@ export default {
   props: {
     comment: Object
   },
-  created() {
-    console.log(this.comment)
+  data() {
+    return {
+      data: this.floorNum(0, this.comment)
+    }
+  },
+  methods: {
+    floorNum(num, data) {
+      if (data.parent) {
+        return this.floorNum(num + 1, data.parent)
+      } else {
+        return num
+      }
+    },
+    // 需要把回复的用户名和评论的id 发送给父组件
+    onReply() {
+      this.$bus.$emit('busFn', this.comment.id, this.comment.user.nickname)
+    }
   }
 }
 </script>

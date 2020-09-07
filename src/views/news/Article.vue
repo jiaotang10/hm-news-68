@@ -36,16 +36,26 @@
     </div>
     <hr>
     <div class="reply">
-        <h3>精彩跟帖</h3>
+        <div class="aa">
+          <h3>精彩跟帖</h3>
+        </div>
+        <!-- <newsComment :comment="item" v-for="item in commentList" :key="item.id" @reply='replyFn'></newsComment> -->
         <newsComment :comment="item" v-for="item in commentList" :key="item.id"></newsComment>
     </div>
     <div class="footer">
-        <div class="text">
+        <div class="text-box" v-if="isShow">
+          <div class="text" @click="onFocus">
             <input type="text" placeholder="写跟帖">
+          </div>
+          <span class="iconfont iconpinglun-"><i>2020</i></span>
+          <span class="iconfont iconshoucang"></span>
+          <span class="iconfont iconfenxiang"></span>
         </div>
-        <span class="iconfont iconpinglun-"><i>2020</i></span>
-        <span class="iconfont iconshoucang"></span>
-        <span class="iconfont iconfenxiang"></span>
+        <div class="textArea" v-else>
+          <!-- 把content 双向绑定才能显示 -->
+          <textarea cols="30" rows="10" :placeholder="'回复：@'+this.nickname" ref='textarea' v-model="content"></textarea>
+          <van-button class="btn" round type="danger" size="mini" @click="sendFn">发送</van-button>
+        </div>
     </div>
     <div class="box"></div>
   </div>
@@ -57,12 +67,28 @@ export default {
   data() {
     return {
       list: [],
-      commentList: []
+      commentList: [],
+      isShow: true,
+      content: '',
+      nickname: '',
+      replyId: ''
     }
   },
   created() {
     this.getArticle()
     this.getComment()
+    // 给bus注册事件，因为本组件需要接收数据
+    this.$bus.$on('busFn', (id, nickname) => {
+      console.log(nickname, id)
+      this.isShow = false
+      this.onFocus()
+      this.nickname = nickname
+      this.replyId = id
+    })
+  },
+  destroyed() {
+    // 移除bus上所有的busFn事件
+    this.$bus.$off('busFn')
   },
   methods: {
     getUrl(url) {
@@ -149,7 +175,36 @@ export default {
         this.commentList = data
         // console.log(this.commentList)
       }
+    },
+    async onFocus() {
+      this.isShow = false
+      // 等待DOM更新
+      await this.$nextTick()
+      this.$refs.textarea.focus()
+    },
+    async sendFn() {
+      const res = await this.$axios.post(`/post_comment/${this.list.id}`, {
+        content: this.content,
+        parent_id: this.replyId
+      })
+      console.log(res.data)
+      const { statusCode, message } = res.data
+      if (statusCode === 200) {
+        this.$toast.success(message)
+        this.getComment()
+        this.content = ''
+        this.nickname = ''
+        this.replyId = ''
+        this.isShow = true
+      }
     }
+    // replyFn(id, nickname) {
+    //   console.log(id, nickname)
+    //   this.isShow = false
+    //   this.nickname = nickname
+    //   this.replyId = id
+    //   this.onFocus()
+    // }
   }
 }
 </script>
@@ -234,26 +289,31 @@ export default {
      .footer {
        background-color: #fff;
          width: 100%;
-         height: 50px;
+         height: 100px;
          display: flex;
          position: fixed;
          bottom: 0;
-         border-top: 1px solid #000;
+        //  border-top: 1px solid #000;
          justify-content: space-around;
          align-items: center;
          padding: 0 5px;
-         .text {
-            //  background-color: pink;
-             width: 180px;
-             text-align: center;
-            //  font-size: 14px;
-            input {
-                height: 30px;
-                border-radius: 15px;
-                font-size: 16px;
-                background-color: #ddd;
-                border: none;
-                padding-left: 20px;
+         .text-box {
+           width: 100%;
+           display: flex;
+           justify-content: space-around;
+            .text {
+                //  background-color: pink;
+                width: 180px;
+                text-align: center;
+                //  font-size: 14px;
+                input {
+                    height: 30px;
+                    border-radius: 15px;
+                    font-size: 16px;
+                    background-color: #ddd;
+                    border: none;
+                    padding-left: 20px;
+                }
             }
          }
          .iconfont {
@@ -271,15 +331,42 @@ export default {
              padding: 0 3px;
              }
          }
+         .textArea{
+           width: 100%;
+           align-items: flex-end;
+           justify-content: space-around;
+           display: flex;
+           position: fixed;
+           bottom: 0;
+           z-index: 99;
+           margin-bottom: 10px;
+            textarea {
+              width: 260px;
+              height: 90px;
+              border-radius: 10px;
+              //  bottom: 0;
+              background-color: #d7d7d7;
+              border: none;
+              padding: 15px;
+              font-size: 16px;
+              color: #6b6b6b;
+            }
+            .btn {
+              padding: 10px 16px;
+            }
+         }
      }
      .box {
         z-index: 999;
-
-       height: 50px;
+       height: 100px;
        width: 100%;
        background-color: #fff;
      }
      .reply {
-       border-bottom: 1px solid #000;
-    }
+      //  margin: 0 3px;
+        // border-bottom: 3px solid #000;
+        .aa {
+          text-align: center;
+        }
+     }
 </style>

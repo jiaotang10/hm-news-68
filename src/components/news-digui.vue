@@ -1,12 +1,12 @@
 <template>
     <div>
-        <newsDigui v-if="aa.parent" :aa='aa.parent'></newsDigui>
+        <newsDigui v-if="aa.parent" :aa='aa.parent' :count='count-1'></newsDigui>
         <div class="digui">
             <div class="info">
-                <p>1.</p>
+                <p>{{count}}</p>
                 <p class="name">{{aa.user.nickname}}</p>
                 <p class="time">{{aa.create_date | now}}</p>
-                <p class="reply">回复</p>
+                <p class="reply" @click="onReply">回复</p>
             </div>
             <div class="content">{{aa.content}}</div>
         </div>
@@ -16,7 +16,13 @@
 <script>
 export default {
   props: {
-    aa: Object
+    aa: Object,
+    count: Number
+  },
+  methods: {
+    onReply() {
+      this.$bus.$emit('busFn', this.aa.id, this.aa.user.nickname)
+    }
   }
 }
 </script>
@@ -24,7 +30,7 @@ export default {
 <style lang='less' scoped>
 .digui{
     margin-top: -1px;
-    border: 1px solid #000;
+    border: 1px solid #d7d7d7;
     padding: 15px;
     .info {
         display: flex;

@@ -36,6 +36,8 @@
 
 <script>
 export default {
+  // 组件取名，递归的时候通过name可以渲染自己，缓存的时候通过name可以进行缓存
+  name: 'index',
   data() {
     return {
       active: 0,
@@ -50,6 +52,14 @@ export default {
   },
   created() {
     this.getTabList()
+  },
+  // 缓存组件激活的时候触发
+  activated() {
+
+  },
+  // 缓存组件不激活的时候触发
+  deactivated() {
+
   },
   watch: {
     active(value) {
