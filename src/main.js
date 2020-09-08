@@ -19,5 +19,6 @@ Vue.prototype.$bus = bus
 
 new Vue({
   router,
+  mode: 'hash',
   render: h => h(App)
 }).$mount('#app')

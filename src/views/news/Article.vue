@@ -47,13 +47,13 @@
           <div class="text" @click="onFocus">
             <input type="text" placeholder="写跟帖">
           </div>
-          <span class="iconfont iconpinglun-"><i>2020</i></span>
-          <span class="iconfont iconshoucang"></span>
+          <span class="iconfont iconpinglun-"><i>{{this.commentLength}}</i></span>
+          <span class="iconfont iconshoucang"  @click="getStar"></span>
           <span class="iconfont iconfenxiang"></span>
         </div>
         <div class="textArea" v-else>
           <!-- 把content 双向绑定才能显示 -->
-          <textarea cols="30" rows="10" :placeholder="'回复：@'+this.nickname" ref='textarea' v-model="content"></textarea>
+          <textarea cols="30" rows="10" :placeholder="'回复：@'+this.nickname" ref='textarea' v-model="content" @blur="onBlur"></textarea>
           <van-button class="btn" round type="danger" size="mini" @click="sendFn">发送</van-button>
         </div>
     </div>
@@ -71,7 +71,9 @@ export default {
       isShow: true,
       content: '',
       nickname: '',
-      replyId: ''
+      replyId: '',
+      commentLength: '',
+      hasStar: ''
     }
   },
   created() {
@@ -101,10 +103,11 @@ export default {
     //   console.log(this.$route.params)
       const { id } = this.$route.params
       const res = await this.$axios.get(`/post/${id}`)
-      // console.log(res.data)
+      console.log(res.data)
       const { statusCode, data } = res.data
       if (statusCode === 200) {
         this.list = data
+        this.commentLength = data.comment_length
         // console.log(this.list)
       }
     },
@@ -182,6 +185,13 @@ export default {
       await this.$nextTick()
       this.$refs.textarea.focus()
     },
+    async onBlur() {
+      if (!this.list.content) {
+        this.isShow = true
+        this.nickname = ''
+        this.replyId = ''
+      }
+    },
     async sendFn() {
       const res = await this.$axios.post(`/post_comment/${this.list.id}`, {
         content: this.content,
@@ -196,6 +206,18 @@ export default {
         this.nickname = ''
         this.replyId = ''
         this.isShow = true
+      }
+    },
+    async getStar() {
+      const res = await this.$axios.get(`/post_star/${this.list.id}`)
+      console.log(res)
+      // const { like } = res.data.has_like
+      // console.log(like)
+      if (this.noLogin()) return
+      if (res.data.statusCode === 200) {
+        this.$toast.success(res.data.message)
+        this.getArticle()
+        this.hasStar = this.data.has_like
       }
     }
     // replyFn(id, nickname) {
@@ -327,8 +349,8 @@ export default {
              border-radius: 8px;
              position: absolute;
              top: -4px;
-             right: -14px;
-             padding: 0 3px;
+             right: -6px;
+             padding: 0 6px;
              }
          }
          .textArea{

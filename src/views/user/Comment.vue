@@ -17,7 +17,7 @@
                     <div class="comment_content">{{item.parent.content}}</div>
                 </div>
                 <div class="rely">{{item.content}}</div>
-                <div class="origin">
+                <div class="origin" @click="$router.push(`/article/${item.post.id}`)">
                     <span class="article">{{item.post.title}}</span>
                     <span class="iconfont iconjiantou1"></span>
                 </div>
