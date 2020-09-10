@@ -7,35 +7,37 @@
         <div class="text">
             <span class="iconfont iconsearch"></span>
             <!-- 按回车和点搜索都可以进行显示 -->
-            <input type="search" placeholder="请输入搜索内容" v-model="key" @keyup.enter="getArticle">
+            <input type="search" placeholder="请输入搜索内容" v-model="key" @keyup.enter="getArticle" @input="recommendFn">
         </div>
         <div class="search" @click="getArticle">
             <p>搜索</p>
         </div>
     </div>
-    <div v-if="!this.articleList.length">
-        <div class="center">
+    <div class="recommend" v-if="recommendList.length">
+        <p v-for="item in recommendList" :key="item.id" @click="goSearch(item.title)">{{item.title}}</p>
+    </div>
+    <div class="content" v-else-if="articleList.length">
+        <newsNewList v-for="item in articleList" :key="item.id" :post="item"></newsNewList>
+    </div>
+    <div class="center" v-else>
         <h5>历史记录</h5>
         <div class="list">
             <!-- 把搜索的关键字存到localstorage里  -->
             <div v-for="item in history" :key="item" @click="goSearch(item)">{{item}}</div>
         </div>
-    </div>
-    <hr>
-    <div class="bottom">
-        <h5>热门搜索</h5>
-        <div class="list">
-            <div v-for="item in hotSearch" :key="item" @click="goSearch(item)">{{item}}</div>
+        <hr>
+        <div class="bottom">
+            <h5>热门搜索</h5>
+            <div class="list">
+                <div v-for="item in hotSearch" :key="item" @click="goSearch(item)">{{item}}</div>
+            </div>
         </div>
-    </div>
-    </div>
-    <div class="content" v-else>
-        <newsNewList v-for="item in articleList" :key="item.id" :post="item"></newsNewList>
     </div>
   </div>
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   data() {
     return {
@@ -43,14 +45,15 @@ export default {
       key: '',
       articleList: [],
       history: [],
-      hotSearch: []
+      hotSearch: [],
+      recommendList: []
     }
   },
   created() {
     // 把搜索的关键字存到history数组里 再存到localstorage里
     // localStorage.setItem('history', JSON.stringify(this.history))
 
-    // 如果没有历史纪录，保证是一个空数组
+    // 如果该账号开始没有历史纪录，得保证是一个空数组，要不然用不了filter和push方法，因为localstorage存的是字符串
     this.history = JSON.parse(localStorage.getItem('history')) || []
     this.hotSearch = ['情火', '茄子', '求职', '123']
   },
@@ -78,6 +81,7 @@ export default {
       this.history = this.history.filter(item => item !== this.key)
       this.history.unshift(this.key)
       localStorage.setItem('history', JSON.stringify(this.history))
+      this.recommendList = []
     },
     backFn() {
       if (this.key === '') {
@@ -90,13 +94,27 @@ export default {
     goSearch(item) {
       this.key = item
       this.getArticle()
-    }
+    },
+    recommendFn: _.debounce(async function() {
+      if (this.key === '') return
+      const res = await this.$axios.get('/post_search_recommend', {
+        params: {
+          keyword: this.key
+        }
+      })
+      console.log(res.data)
+      if (res.data.statusCode === 200) {
+        this.recommendList = res.data.data
+      }
+    //   this.getArticle()
+    }, 500)
   },
   // 监听key属性，如果key为空，那把articleList数组清空，因为这个数据清空，就不会显示文章列表
   watch: {
     key(value) {
       if (value === '') {
         this.articleList = ''
+        this.recommendList = ''
       }
     }
   }
@@ -159,5 +177,13 @@ h5 {
     div {
         padding-right: 20px;
     }
+}
+.recommend {
+    p {
+        padding: 10px 0;
+        border-bottom: 2px solid #d7d7d7;
+        font-size: 16px;
+        color: #434343;
     }
+}
 </style>
